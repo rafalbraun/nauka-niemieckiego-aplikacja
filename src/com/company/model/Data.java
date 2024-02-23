@@ -1,20 +1,14 @@
 package com.company.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 public class Data {
 
     String filename;
     Collection<Lesson> lessons = new LinkedList<>();
 
-    public Data(String filename) {
-        this.filename = filename;
+    public Data() {
     }
 
     public Collection<Lesson> getLessons() {
@@ -24,7 +18,7 @@ public class Data {
     public void createLesson(String lessonName) {
         lessons.add(new Lesson(lessonName));
     }
-
+/*
     public void saveData() {
         try {
             FileWriter writer = new FileWriter(filename);
@@ -51,5 +45,7 @@ public class Data {
             ex.printStackTrace();
         }
     }
+*/
+
 
 }

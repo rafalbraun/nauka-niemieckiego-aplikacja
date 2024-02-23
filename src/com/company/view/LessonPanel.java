@@ -1,6 +1,4 @@
-package com.company;
-
-import com.company.model.Data;
+package com.company.view;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,14 +8,14 @@ public class LessonPanel extends JPanel {
 //    JTextField textField = new JTextField();
 //    JButton checkButton = new JButton("Check");
 
-    public LessonPanel(Data data) {
+    public LessonPanel(LessonsSidebar lessonsSidebar, JPanel panel) {
 
         setLayout(new BorderLayout());
 
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
-        mainSplitPane.setTopComponent(new LessonsSidebar(data));
-        mainSplitPane.setBottomComponent(new JPanel());
+        mainSplitPane.setTopComponent(lessonsSidebar);
+        mainSplitPane.setBottomComponent(panel);
 
         //mainSplitPane.setLayout(new BorderLayout());
 

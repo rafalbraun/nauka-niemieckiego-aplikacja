@@ -1,4 +1,4 @@
-package com.company;
+package com.company.view;
 
 import com.company.model.Data;
 import com.company.model.Lesson;
@@ -8,18 +8,18 @@ import java.util.Collection;
 
 public class LessonsSidebar extends JList {
 
-    public LessonsSidebar(Data data) {
+    public LessonsSidebar() {
 
         //DefaultListModel<String> demoList = new DefaultListModel<String>();
         //demoList.addElement("addElements");
         //setModel(demoList);
 
-        DefaultListModel<Lesson> modelList = new DefaultListModel<Lesson>();
-        Collection<Lesson> lessons = data.getLessons();
-        for(Lesson lesson : lessons) {
-            modelList.addElement(lesson);
-        }
-        setModel(modelList);
+        //DefaultListModel<Lesson> modelList = new DefaultListModel<Lesson>();
+        //Collection<Lesson> lessons = data.getLessons();
+//        for(Lesson lesson : lessons) {
+//            modelList.addElement(lesson);
+//        }
+        //setModel(modelList);
 
     }
 

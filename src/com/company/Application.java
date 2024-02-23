@@ -1,44 +1,26 @@
 package com.company;
 
+import com.company.controller.Controller;
+import com.company.events.AppEvent;
 import com.company.model.Data;
+import com.company.view.View;
 
-import javax.swing.*;
-import java.awt.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Application {
 
+    private static final BlockingQueue<AppEvent> blockingQueue  = new LinkedBlockingQueue<>();
     private static Data data;
+    private static View view;
 
     public static void main(String[] args) {
-        data = new Data("db.dat");
-        //data.readData();
-
+        data = new Data();
         data.createLesson("zwierzęta");
         data.createLesson("opis pokoju");
-
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                    ex.printStackTrace();
-                }
-
-                JMenuBar menuBar = new MainMenuBar(data);
-                JPanel lessonPanel = new LessonPanel(data);
-
-                JFrame frame = new JFrame("Application");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setJMenuBar(menuBar);
-                frame.add(lessonPanel);
-                frame.pack();
-                frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
-                frame.setSize(new Dimension(800, 600));
-                frame.setLocationRelativeTo(null);
-            }
-        });
+        view = new View(blockingQueue, data);
+        final Controller controller = new Controller(view, data, blockingQueue);
+        controller.work();
     }
 
 }

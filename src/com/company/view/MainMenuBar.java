@@ -1,12 +1,15 @@
-package com.company;
+package com.company.view;
 
+import com.company.events.AppEvent;
+import com.company.events.CreateLessonEvent;
 import com.company.model.Data;
 
 import javax.swing.*;
+import java.util.concurrent.BlockingQueue;
 
 public class MainMenuBar extends JMenuBar {
 
-    public MainMenuBar(Data data) {
+    public MainMenuBar(BlockingQueue<AppEvent> blockingQueue) {
 
         var iconNew = new ImageIcon("resources/new.png");
         var iconOpen = new ImageIcon("resources/open.png");
@@ -67,9 +70,10 @@ public class MainMenuBar extends JMenuBar {
                     null);
 
             //System.out.println(textField.getText());
-
-            data.createLesson(textField.getText());
+            //data.createLesson(textField.getText());
             //view.refresh();
+
+            blockingQueue.add(new CreateLessonEvent(textField.getText()));
 
         });
 
