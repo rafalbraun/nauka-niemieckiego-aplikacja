@@ -7,9 +7,9 @@ public class Data {
 
     String filename;
     Collection<Lesson> lessons = new LinkedList<>();
+    Lesson chosenLesson;
 
-    public Data() {
-    }
+    public Data() {}
 
     public Collection<Lesson> getLessons() {
         return lessons;
@@ -18,6 +18,11 @@ public class Data {
     public void createLesson(String lessonName) {
         lessons.add(new Lesson(lessonName));
     }
+
+    public Lesson getChosenLesson() { return chosenLesson; }
+
+    public void setChosenLesson(Lesson lesson) { this.chosenLesson = lesson; }
+
 /*
     public void saveData() {
         try {

@@ -17,4 +17,9 @@ public class Lesson {
     public String toString() {
         return lessonName;
     }
+
+    public List<Word> getWords() { return lessonWords; }
+
+    public void addWord(Word word) { this.lessonWords.add(word); }
+
 }
