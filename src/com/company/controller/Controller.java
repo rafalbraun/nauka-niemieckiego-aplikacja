@@ -1,11 +1,8 @@
 package com.company.controller;
 
-import com.company.events.AddWordToLessonEvent;
-import com.company.events.ChooseLessonEvent;
+import com.company.events.*;
 import com.company.model.Lesson;
 import com.company.view.View;
-import com.company.events.AppEvent;
-import com.company.events.CreateLessonEvent;
 import com.company.model.Data;
 
 import java.util.HashMap;
@@ -68,7 +65,13 @@ public class Controller {
                 view.refreshWords(data);
             }
         });
+        eventActionMap.put(ShowTestDialogEvent.class, new AppAction() {
+            public void go(AppEvent event) {
 
+                view.showTestDialog(data);
+
+            }
+        });
     }
 
 }

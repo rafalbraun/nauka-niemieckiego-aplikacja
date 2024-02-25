@@ -37,6 +37,16 @@ public class View {
         window.refreshWords(data);
     }
 
+    public void showTestDialog(Data data) {
+        JDialog dialog;
+        dialog = new TestDialog(data);
+        dialog.setTitle("Test");
+        dialog.setPreferredSize(new Dimension(450, 350));
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+    }
+
     class AppWindow {
 
         JList<String> lessonsSidebar;
@@ -122,13 +132,14 @@ public class View {
             DefaultListModel<String> modelList = new DefaultListModel<String>();
             Map<String, Lesson> lessons = data.getLessons();
 
+            // Required because we need to find index of lesson pointer by <chosenLesson>
             int index=0, iter=0;
             for (Map.Entry<String, Lesson> entry : lessons.entrySet()) {
                 String key = entry.getKey();
                 Lesson val = entry.getValue();
                 modelList.addElement(key);
                 if (val.equals(data.getChosenLesson())) {
-                    System.out.println(val);
+                    //System.out.println(val);
                     index = iter;
                 }
                 iter++;
