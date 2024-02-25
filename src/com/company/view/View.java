@@ -1,17 +1,16 @@
 package com.company.view;
 
+import com.company.events.AddWordToLessonEvent;
+import com.company.events.ChooseLessonEvent;
 import com.company.model.Data;
 import com.company.events.AppEvent;
 import com.company.model.Lesson;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class View {
@@ -28,22 +27,23 @@ public class View {
                 refresh(data);
             }
         });
-
     }
 
     public void refresh(Data data) {
-        //DefaultListModel<String> demoList = new DefaultListModel<String>();
-        //demoList.addElement("addElements");
-        //setModel(demoList);
-
         window.refreshLessons(data);
+    }
+
+    public void refreshWords(Data data) {
         window.refreshWords(data);
     }
 
     class AppWindow {
 
-        JList<Lesson> lessonsSidebar;
+        JList<String> lessonsSidebar;
         JTable tablePanel;
+
+        // Column Names
+        String[] columns = { "DEUTSCH", "POLSKI" };
 
         AppWindow() {
 
@@ -58,77 +58,105 @@ public class View {
                 ex.printStackTrace();
             }
 
-            String[][] data = {
-                    { "die Zeit (ż.)", "czas" },
-                    { "das Beispiel (n.)", "przykład" },
-                    { "das Jahr (n.)", "rok" },
-                    { "der Morgen (m.)", "poranek" },
-                    { "die Stadt (f.)", "miasto" }
-            };
-
-            // Column Names
-            String[] columnNames = { "Original", "Translation" };
-
             lessonsSidebar = new JList<>();
-            tablePanel = new JTable(data, columnNames);
+            tablePanel = new JTable();
 
             lessonsSidebar.setFont(new Font("Serif", Font.PLAIN, 20));
             lessonsSidebar.setFixedCellHeight(30);
+            lessonsSidebar.addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting()) {
+                    String lessonName = lessonsSidebar.getSelectedValue();
+
+                    // TODO if no available lesson, then hide toolbar
+
+                    blockingQueue.add(new ChooseLessonEvent(lessonName));
+                }
+            });
 
             tablePanel.setBounds(30, 40, 200, 300);
             tablePanel.setRowHeight(30);
+            //tablePanel.setFont(new Font("Serif", Font.PLAIN, 20));
+
+            // Set font globally for JTable
             tablePanel.setFont(new Font("Serif", Font.PLAIN, 20));
 
-            //TableColumn col = tablePanel.getColumnModel().getColumn(0);
-            //col.setCellRenderer(new CustomTableCellRenderer());
+            // Set cell renderer with the same font settings
+            DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+            renderer.setFont(new Font("Serif", Font.PLAIN, 20));
+            tablePanel.setDefaultRenderer(Object.class, renderer);
+
+            // Set cell editor with the same font settings
+            DefaultCellEditor editor = new DefaultCellEditor(new JTextField()) {
+                @Override
+                public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                    Component editorComponent = super.getTableCellEditorComponent(table, value, isSelected, row, column);
+                    editorComponent.setFont(new Font("Serif", Font.PLAIN, 20));
+                    return editorComponent;
+                }
+            };
+            tablePanel.setDefaultEditor(Object.class, editor);
 
             JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
             mainSplitPane.setTopComponent(new JScrollPane(lessonsSidebar));
             mainSplitPane.setBottomComponent(new JScrollPane(tablePanel));
             mainSplitPane.setDividerLocation(200);
-            //mainSplitPane.setLayout(new BorderLayout());
 
             JMenuBar menuBar = new MainMenuBar(blockingQueue);
+            JToolBar toolBar = new MainToolBar(blockingQueue);
+            JPanel mainPanel = new JPanel(new BorderLayout());
+
+            mainPanel.add(toolBar, BorderLayout.NORTH);
+            mainPanel.add(mainSplitPane);
 
             JFrame frame = new JFrame("Application");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setJMenuBar(menuBar);
-            //frame.add(lessonsSidebar);
-            frame.add(mainSplitPane);
+            frame.add(mainPanel);
             frame.pack();
-            frame.setLocationRelativeTo(null);
             frame.setVisible(true);
             frame.setSize(new Dimension(800, 600));
             frame.setLocationRelativeTo(null);
         }
 
-        public class CustomTableCellRenderer extends JLabel implements TableCellRenderer {
-
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                           boolean hasFocus, int rowIndex, int vColIndex) {
-
-                //Color newColor = (Color)color;
-                //setBackground(newColor);
-                setFont(new Font("Serif", Font.PLAIN, 20));
-                setText(value.toString());
-                setBorder(new EmptyBorder(20, 10, 20, 10));
-
-                return this;
-            }
-        }
-
         public void refreshLessons(Data data) {
-            DefaultListModel<Lesson> modelList = new DefaultListModel<Lesson>();
-            Collection<Lesson> lessons = data.getLessons();
-            for(Lesson lesson : lessons) {
-                modelList.addElement(lesson);
+            DefaultListModel<String> modelList = new DefaultListModel<String>();
+            Map<String, Lesson> lessons = data.getLessons();
+
+            int index=0, iter=0;
+            for (Map.Entry<String, Lesson> entry : lessons.entrySet()) {
+                String key = entry.getKey();
+                Lesson val = entry.getValue();
+                modelList.addElement(key);
+                if (val.equals(data.getChosenLesson())) {
+                    System.out.println(val);
+                    index = iter;
+                }
+                iter++;
             }
+
             lessonsSidebar.setModel(modelList);
+            lessonsSidebar.setSelectedIndex(index);
         }
 
         public void refreshWords(Data data) {
             Lesson lesson = data.getChosenLesson();
 
+            // Check if lesson is even available
+            if (lesson == null) return;
+
+            // Convert list of words into array to place in JTable
+            String[][] newData = lesson.getWords();
+
+            // Create a DefaultTableModel with data and column names
+            DefaultTableModel model = new DefaultTableModel(newData, columns);
+
+            // Set new data in the DefaultTableModel
+            model.setDataVector(newData, columns);
+
+            // Refresh the table
+            model.fireTableDataChanged();
+
+            tablePanel.setModel(model);
         }
 
     }

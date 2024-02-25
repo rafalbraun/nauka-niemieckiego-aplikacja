@@ -1,5 +1,8 @@
 package com.company.controller;
 
+import com.company.events.AddWordToLessonEvent;
+import com.company.events.ChooseLessonEvent;
+import com.company.model.Lesson;
 import com.company.view.View;
 import com.company.events.AppEvent;
 import com.company.events.CreateLessonEvent;
@@ -40,11 +43,32 @@ public class Controller {
     private void fillEventActionMap() {
         eventActionMap.put(CreateLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
-
-                data.createLesson(((CreateLessonEvent)event).getName());
+                String lessonName = ((CreateLessonEvent)event).getName();
+                if ("".equals(lessonName)) return;
+                Lesson lesson = data.createLesson(lessonName);
+                data.setChosenLesson(lesson);
                 view.refresh(data);
             }
         });
+        eventActionMap.put(AddWordToLessonEvent.class, new AppAction() {
+            public void go(AppEvent event) {
+                String word1 = ((AddWordToLessonEvent)event).getWordFirst();
+                String word2 = ((AddWordToLessonEvent)event).getWordSecond();
+                if ("".equals(word1) || "".equals(word2)) return;
+                Lesson lesson = data.getChosenLesson();
+                lesson.addWord(word1, word2);
+                view.refresh(data);
+            }
+        });
+        eventActionMap.put(ChooseLessonEvent.class, new AppAction() {
+            public void go(AppEvent event) {
+                String lessonName = ((ChooseLessonEvent)event).getLessonName();
+                Lesson lesson = data.getLessons().get(lessonName);
+                data.setChosenLesson(lesson);
+                view.refreshWords(data);
+            }
+        });
+
     }
 
 }

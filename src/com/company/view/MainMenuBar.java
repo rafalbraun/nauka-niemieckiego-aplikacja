@@ -11,10 +11,10 @@ public class MainMenuBar extends JMenuBar {
 
     public MainMenuBar(BlockingQueue<AppEvent> blockingQueue) {
 
-        var iconNew = new ImageIcon("resources/new.png");
-        var iconOpen = new ImageIcon("resources/open.png");
-        var iconSave = new ImageIcon("resources/save.png");
-        var iconExit = new ImageIcon("resources/exit.png");
+        var iconNew = new ImageIcon("resources/icons/new.png");
+        var iconOpen = new ImageIcon("resources/icons/open.png");
+        var iconSave = new ImageIcon("resources/icons/save.png");
+        var iconExit = new ImageIcon("resources/icons/exit.png");
 
         var fileMenu = new JMenu("File");
         var impMenu = new JMenu("Import");

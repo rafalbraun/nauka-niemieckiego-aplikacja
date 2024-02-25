@@ -1,25 +1,32 @@
 package com.company.model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Lesson {
+public class Lesson implements Serializable {
 
-    String lessonName;
+    private static final long serialVersionUID = 1L;
 
-    List<Word> lessonWords = new LinkedList<Word>();
+    List<Pair<String,String>> wordList = new LinkedList<>();
 
-    public Lesson(String lessonName) {
-        this.lessonName = lessonName;
+    public Lesson() {}
+
+    public void addWord(String word1, String word2) {
+        wordList.add(new Pair<>(word1, word2));
     }
 
-    @Override
-    public String toString() {
-        return lessonName;
+    public String[][] getWords() {
+        // Create a 2D String array with the same size as the list
+        String[][] result = new String[wordList.size()][2];
+
+        // Iterate over the list and populate the array
+        for (int i = 0; i < wordList.size(); i++) {
+            Pair<String, String> pair = wordList.get(i);
+            result[i][0] = pair.getFirst();
+            result[i][1] = pair.getSecond();
+        }
+
+        return result;
     }
-
-    public List<Word> getWords() { return lessonWords; }
-
-    public void addWord(Word word) { this.lessonWords.add(word); }
-
 }
