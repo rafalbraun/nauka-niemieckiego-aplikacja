@@ -1,6 +1,5 @@
 package com.company.view;
 
-import com.company.events.AddWordToLessonEvent;
 import com.company.events.ChooseLessonEvent;
 import com.company.model.Data;
 import com.company.events.AppEvent;
@@ -38,10 +37,9 @@ public class View {
     }
 
     public void showTestDialog(Data data) {
-        JDialog dialog;
-        dialog = new TestDialog(data);
+        JDialog dialog = new TestDialog(data);
         dialog.setTitle("Test");
-        dialog.setPreferredSize(new Dimension(450, 350));
+        dialog.setSize(new Dimension(600, 600));
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
@@ -139,7 +137,6 @@ public class View {
                 Lesson val = entry.getValue();
                 modelList.addElement(key);
                 if (val.equals(data.getChosenLesson())) {
-                    //System.out.println(val);
                     index = iter;
                 }
                 iter++;

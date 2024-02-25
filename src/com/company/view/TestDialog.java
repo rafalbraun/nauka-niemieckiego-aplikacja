@@ -10,6 +10,16 @@ import java.awt.event.WindowEvent;
 
 public class TestDialog extends JDialog {
 
+    private JComponent[][] testData;
+
+    private JPanel createTestPanel(int size) {
+        JPanel testPanel = new JPanel();
+        int gridSize = (size > 10) ? size : size + 10;
+        testPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        testPanel.setLayout(new GridLayout(gridSize, 1, 5, 5));
+        return testPanel;
+    }
+
     public TestDialog(Data data) {
 
         var basePanel = new JPanel();
@@ -17,59 +27,37 @@ public class TestDialog extends JDialog {
 
         add(basePanel);
 
-        var testPanel1 = new JPanel();
-        testPanel1.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        testPanel1.setLayout(new GridLayout(4, 1, 5, 5));
+        String[][] words = data.getChosenLesson().getWords();
 
-        JComponent[] buttons = {
-                new JLabel("koń"),
-                new JLabel("ptak"),
-                new JLabel("hipopotam"),
-                new JLabel("pies"),
-        };
+        var testPanel0 = createTestPanel(words.length);
+        var testPanel2 = createTestPanel(words.length);
+        var testPanel1 = createTestPanel(words.length);
 
-        for (JComponent jComponent : buttons) {
-            testPanel1.add(jComponent);
-            jComponent.setFont(new Font("Serif", Font.PLAIN, 20));
+        testData = new JComponent[words.length][];
+        for (int i=0; i < words.length; i++) {
+            testData[i] = new JComponent[]{
+                new JLabel(words[i][1]),
+                new JTextField(),
+                new JLabel(words[i][0]),
+            };
         }
+        for (JComponent[] componentArray : testData) {
 
-        var testPanel2 = new JPanel();
-        testPanel2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        testPanel2.setLayout(new GridLayout(4, 1, 5, 5));
+            testPanel0.add(componentArray[0]);
+            testPanel1.add(componentArray[1]);
+            testPanel2.add(componentArray[2]);
 
-        JComponent[] fields = {
-                new JTextField(),
-                new JTextField(),
-                new JTextField(),
-                new JTextField(),
-        };
+            for (Component component : componentArray) {
+                component.setFont(new Font("Sans-serif", Font.PLAIN, 20));
+            }
 
-        for (JComponent field : fields) {
-            testPanel2.add(field);
-            field.setFont(new Font("Serif", Font.PLAIN, 20));
-        }
-
-        var testPanel3 = new JPanel();
-        testPanel3.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        testPanel3.setLayout(new GridLayout(4, 1, 5, 5));
-
-        JComponent[] answers = {
-                new JLabel("test"),
-                new JLabel("test"),
-                new JLabel("test"),
-                new JLabel("test"),
-        };
-
-        for (JComponent answer : answers) {
-            testPanel3.add(answer);
-            answer.setFont(new Font("Serif", Font.PLAIN, 20));
         }
 
         JPanel tempPanel = new JPanel(new BorderLayout());
-        tempPanel.add(testPanel1, BorderLayout.WEST);
-        tempPanel.add(testPanel2, BorderLayout.CENTER);
-        tempPanel.add(testPanel3, BorderLayout.EAST);
-        testPanel3.setVisible(false);
+        tempPanel.add(testPanel0, BorderLayout.WEST);
+        tempPanel.add(testPanel1, BorderLayout.CENTER);
+        tempPanel.add(testPanel2, BorderLayout.EAST);
+        testPanel2.setVisible(false);
         basePanel.add(new JScrollPane(tempPanel));
 
         var bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -77,7 +65,18 @@ public class TestDialog extends JDialog {
         var checkBtn = new JButton("Check");
         checkBtn.setMnemonic(KeyEvent.VK_N);
         checkBtn.addActionListener((checkEvent) -> {
-            testPanel3.setVisible(true);
+
+            for (JComponent[] componentArray : testData) {
+                JTextField textField = (JTextField)componentArray[1];
+                JLabel answerLabel = (JLabel)componentArray[2];
+                if (answerLabel.getText().equals(textField.getText())) {
+                    answerLabel.setForeground(new Color(0, 128, 0));
+                } else {
+                    answerLabel.setForeground(Color.RED);
+                }
+            }
+
+            testPanel2.setVisible(true);
             checkBtn.setEnabled(false);
         });
 
