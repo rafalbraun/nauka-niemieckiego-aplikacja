@@ -11,16 +11,16 @@ import java.util.concurrent.BlockingQueue;
 
 public class Controller {
 
-    BlockingQueue<AppEvent> blockingQueue;
+    private final BlockingQueue<AppEvent> blockingQueue;
     private final Map<Class<? extends AppEvent>, AppAction> eventActionMap;
-    View view;
-    Data data;
+    private final View view;
+    private final Data data;
 
     public Controller(View view, Data data, BlockingQueue<AppEvent> blockingQueue) {
         this.blockingQueue = blockingQueue;
         this.view = view;
         this.data = data;
-        eventActionMap = new HashMap<Class<? extends AppEvent>, AppAction>();
+        this.eventActionMap = new HashMap<Class<? extends AppEvent>, AppAction>();
         fillEventActionMap();
     }
 
@@ -67,9 +67,7 @@ public class Controller {
         });
         eventActionMap.put(ShowTestDialogEvent.class, new AppAction() {
             public void go(AppEvent event) {
-
                 view.showTestDialog(data);
-
             }
         });
     }

@@ -10,7 +10,7 @@ import java.awt.event.WindowEvent;
 
 public class TestDialog extends JDialog {
 
-    private JComponent[][] testData;
+    private final JComponent[][] testData;
 
     private JPanel createTestPanel(int size) {
         JPanel testPanel = new JPanel();
