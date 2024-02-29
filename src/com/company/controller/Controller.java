@@ -50,6 +50,15 @@ public class Controller {
             }
         });
 
+        eventActionMap.put(RemoveLessonEvent.class, new AppAction() {
+            public void go(AppEvent event) {
+                String lessonName = ((RemoveLessonEvent)event).getName();
+                if ("".equals(lessonName)) return;
+                data.removeLesson(lessonName);
+                view.refresh(data);
+            }
+        });
+
         eventActionMap.put(CreateWordLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 String word1 = ((CreateWordLessonEvent)event).getWordFirst();
@@ -105,6 +114,13 @@ public class Controller {
                 view.refresh(data);
             }
         });
+
+        eventActionMap.put(SaveEvent.class, new AppAction() {
+            public void go(AppEvent event) {
+                data.saveData();
+            }
+        });
+
 
     }
 

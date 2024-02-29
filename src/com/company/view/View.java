@@ -3,9 +3,10 @@ package com.company.view;
 import com.company.events.*;
 import com.company.model.Data;
 import com.company.model.Lesson;
-import com.company.model.Word;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -52,33 +53,23 @@ public class View {
 
     class AppWindow {
 
-        JList<String> lessonsSidebar;
-        JTable tablePanel;
+        JList<String> lessonsList;
+        JTable wordsTable;
+        JFrame frame;
 
         // Column Names
         String[] columns = { "DEUTSCH", "POLSKI" };
 
         AppWindow() {
 
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            lessonsList = new JList<>();
+            wordsTable = new JTable();
 
-//                FontUIResource font = new FontUIResource("Verdana", Font.PLAIN, 24);
-//                UIManager.put("Table.font", font);
-//                UIManager.put("Table.foreground", Color.RED);
-
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                ex.printStackTrace();
-            }
-
-            lessonsSidebar = new JList<>();
-            tablePanel = new JTable();
-
-            lessonsSidebar.setFont(new Font("Serif", Font.PLAIN, 20));
-            lessonsSidebar.setFixedCellHeight(30);
-            lessonsSidebar.addListSelectionListener(e -> {
+            lessonsList.setFont(new Font("Serif", Font.PLAIN, 20));
+            lessonsList.setFixedCellHeight(30);
+            lessonsList.addListSelectionListener(e -> {
                 if (!e.getValueIsAdjusting()) {
-                    String lessonName = lessonsSidebar.getSelectedValue();
+                    String lessonName = lessonsList.getSelectedValue();
 
                     // TODO if no available lesson, then hide toolbar
 
@@ -86,30 +77,68 @@ public class View {
                 }
             });
 
-            tablePanel.setBounds(30, 40, 200, 300);
-            tablePanel.setRowHeight(30);
-            tablePanel.setFont(new Font("Serif", Font.PLAIN, 20));
+            JPopupMenu popupMenuList = new JPopupMenu() {
+                @Override
+                public void show(Component invoker, int x, int y) {
+                    int row = lessonsList.locationToIndex(new Point(x, y));
+                    if (row != -1) {
+                        lessonsList.setSelectedIndex(row);
+                    }
+                    super.show(invoker, x, y);
+                }
+            };
+            lessonsList.setComponentPopupMenu(popupMenuList);
+
+            JMenuItem removeLesson = new JMenuItem("Remove Lesson");
+            popupMenuList.add(removeLesson);
+            removeLesson.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    int choice = JOptionPane.showConfirmDialog(frame, "Do you want to remove this lesson?",
+                            "Remove Lesson", JOptionPane.YES_NO_OPTION);
+
+                    if (choice == JOptionPane.YES_OPTION) {
+                        int selectedRow = lessonsList.getSelectedIndex();
+                        String lessonName = lessonsList.getModel().getElementAt(selectedRow);
+                        blockingQueue.add(new RemoveLessonEvent(lessonName));
+                    }
+
+                }
+            });
+
+            wordsTable.setBounds(30, 40, 200, 300);
+            wordsTable.setRowHeight(30);
+            wordsTable.setFont(new Font("Serif", Font.PLAIN, 20));
 
             // Set cell renderer with the same font settings
             DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
             renderer.setFont(new Font("Serif", Font.PLAIN, 20));
-            tablePanel.setDefaultRenderer(Object.class, renderer);
+            wordsTable.setDefaultRenderer(Object.class, renderer);
 
-            tablePanel.addMouseListener(new MouseAdapter() {
+            wordsTable.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent event) {
                     super.mousePressed(event);
 
                     // selects the row at which point the mouse is clicked
                     Point point = event.getPoint();
-                    int currentRow = tablePanel.rowAtPoint(point);
-                    tablePanel.setRowSelectionInterval(currentRow, currentRow);
+                    int currentRow = wordsTable.rowAtPoint(point);
+                    wordsTable.setRowSelectionInterval(currentRow, currentRow);
+                }
+            });
+
+            // Add a table model listener to detect cell value changes
+            wordsTable.getModel().addTableModelListener(new TableModelListener() {
+                @Override
+                public void tableChanged(TableModelEvent e) {
+                        System.out.println("value changed");
                 }
             });
 
             // constructs the popup menu
             JPopupMenu popupMenu = new JPopupMenu();
-            JMenuItem menuItemRemove = new JMenuItem("Remove Row");
+            JMenuItem menuItemRemove = new JMenuItem("Remove Word");
             JMenuItem menuItemMoveUp = new JMenuItem("Move Up");
             JMenuItem menuItemMoveDn = new JMenuItem("Move Down");
             popupMenu.add(menuItemRemove);
@@ -119,32 +148,37 @@ public class View {
             menuItemRemove.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int selectedRow = tablePanel.getSelectedRow();
-                    Vector rowData = ((DefaultTableModel) tablePanel.getModel()).getDataVector().elementAt(tablePanel.convertRowIndexToModel(tablePanel.getSelectedRow()));
-                    blockingQueue.add(new RemoveWordLessonEvent((String)rowData.get(0), (String)rowData.get(1)));
+
+                    int choice = JOptionPane.showConfirmDialog(frame, "Do you want to remove this word?",
+                            "Remove Word", JOptionPane.YES_NO_OPTION);
+
+                    if (choice == JOptionPane.YES_OPTION) {
+                        int selectedRow = wordsTable.getSelectedRow();
+                        Vector rowData = ((DefaultTableModel) wordsTable.getModel()).getDataVector().elementAt(wordsTable.convertRowIndexToModel(wordsTable.getSelectedRow()));
+                        blockingQueue.add(new RemoveWordLessonEvent((String)rowData.get(0), (String)rowData.get(1)));
+                    }
+
                 }
             });
+
             menuItemMoveUp.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int selectedRow = tablePanel.getSelectedRow();
+                    int selectedRow = wordsTable.getSelectedRow();
                     blockingQueue.add(new MoveUpWordLessonEvent(selectedRow));
                 }
             });
+
             menuItemMoveDn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int selectedRow = tablePanel.getSelectedRow();
+                    int selectedRow = wordsTable.getSelectedRow();
                     blockingQueue.add(new MoveDnWordLessonEvent(selectedRow));
                 }
             });
 
-
-
-
-
             // sets the popup menu for the table
-            tablePanel.setComponentPopupMenu(popupMenu);
+            wordsTable.setComponentPopupMenu(popupMenu);
 
             // Set cell editor with the same font settings
             DefaultCellEditor editor = new DefaultCellEditor(new JTextField()) {
@@ -155,21 +189,21 @@ public class View {
                     return editorComponent;
                 }
             };
-            tablePanel.setDefaultEditor(Object.class, editor);
+            wordsTable.setDefaultEditor(Object.class, editor);
 
             JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-            mainSplitPane.setTopComponent(new JScrollPane(lessonsSidebar));
-            mainSplitPane.setBottomComponent(new JScrollPane(tablePanel));
+            mainSplitPane.setTopComponent(new JScrollPane(lessonsList));
+            mainSplitPane.setBottomComponent(new JScrollPane(wordsTable));
             mainSplitPane.setDividerLocation(200);
 
-            JMenuBar menuBar = new MainMenuBar(blockingQueue);
-            JToolBar toolBar = new MainToolBar(blockingQueue);
+            JMenuBar menuBar = new MainMenuBar(blockingQueue, frame);
+            JToolBar toolBar = new MainToolBar(blockingQueue, frame);
             JPanel mainPanel = new JPanel(new BorderLayout());
 
             mainPanel.add(toolBar, BorderLayout.NORTH);
             mainPanel.add(mainSplitPane);
 
-            JFrame frame = new JFrame("Application");
+            frame = new JFrame("Application");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setJMenuBar(menuBar);
             frame.add(mainPanel);
@@ -183,7 +217,7 @@ public class View {
             DefaultListModel<String> modelList = new DefaultListModel<String>();
             Map<String, Lesson> lessons = data.getLessons();
 
-            // Required because we need to find index of lesson pointer by <chosenLesson>
+            // Required because we need to find index of lesson pointer by /chosenLesson/
             int index=0, iter=0;
             for (Map.Entry<String, Lesson> entry : lessons.entrySet()) {
                 String key = entry.getKey();
@@ -195,8 +229,8 @@ public class View {
                 iter++;
             }
 
-            lessonsSidebar.setModel(modelList);
-            lessonsSidebar.setSelectedIndex(index);
+            lessonsList.setModel(modelList);
+            lessonsList.setSelectedIndex(index);
         }
 
         public void refreshWords(Data data) {
@@ -217,7 +251,7 @@ public class View {
             // Refresh the table
             model.fireTableDataChanged();
 
-            tablePanel.setModel(model);
+            wordsTable.setModel(model);
         }
 
     }

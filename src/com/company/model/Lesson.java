@@ -1,11 +1,13 @@
 package com.company.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Lesson implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     List<Pair<String,String>> wordList = new LinkedList<>();

@@ -5,15 +5,16 @@ import com.company.events.AppEvent;
 import com.company.events.ShowTestDialogEvent;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.concurrent.BlockingQueue;
 
 public class MainToolBar extends JToolBar {
 
     JButton button;
 
-    public MainToolBar(BlockingQueue<AppEvent> blockingQueue) {
+    public MainToolBar(BlockingQueue<AppEvent> blockingQueue, Component rootComponent) {
 
-        button = new JButton("Add Word");
+        button = new JButton("Dodaj Słówko");
         button.addActionListener((event) -> {
 
             JTextField textField1 = new JTextField();
@@ -26,7 +27,7 @@ public class MainToolBar extends JToolBar {
             int result = JOptionPane.showOptionDialog(
                     null,
                     inputs,
-                    "Add Word",
+                    "Dodaj Słówko",
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.PLAIN_MESSAGE,
                     null,
