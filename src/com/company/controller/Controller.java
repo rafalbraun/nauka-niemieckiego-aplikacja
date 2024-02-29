@@ -5,6 +5,7 @@ import com.company.model.Lesson;
 import com.company.view.View;
 import com.company.model.Data;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -47,10 +48,10 @@ public class Controller {
                 view.refresh(data);
             }
         });
-        eventActionMap.put(AddWordToLessonEvent.class, new AppAction() {
+        eventActionMap.put(CreateWordLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
-                String word1 = ((AddWordToLessonEvent)event).getWordFirst();
-                String word2 = ((AddWordToLessonEvent)event).getWordSecond();
+                String word1 = ((CreateWordLessonEvent)event).getWordFirst();
+                String word2 = ((CreateWordLessonEvent)event).getWordSecond();
                 if ("".equals(word1) || "".equals(word2)) return;
                 Lesson lesson = data.getChosenLesson();
                 lesson.addWord(word1, word2);
@@ -70,6 +71,33 @@ public class Controller {
                 view.showTestDialog(data);
             }
         });
+
+        eventActionMap.put(RemoveWordLessonEvent.class, new AppAction() {
+            public void go(AppEvent event) {
+                String word1 = ((RemoveWordLessonEvent)event).getWordFirst();
+                String word2 = ((RemoveWordLessonEvent)event).getWordSecond();
+                Lesson lesson = data.getChosenLesson();
+                lesson.removeWord(word1, word2);
+                view.refresh(data);
+            }
+        });
+
+        eventActionMap.put(MoveUpWordLessonEvent.class, new AppAction() {
+            public void go(AppEvent event) {
+                int selectedRow = ((MoveUpWordLessonEvent)event).getSelectedRow();
+                Collections.swap(data.getChosenLesson().getWordList(), selectedRow, selectedRow-1);
+                view.refresh(data);
+            }
+        });
+
+        eventActionMap.put(MoveDnWordLessonEvent.class, new AppAction() {
+            public void go(AppEvent event) {
+                int selectedRow = ((MoveDnWordLessonEvent)event).getSelectedRow();
+                Collections.swap(data.getChosenLesson().getWordList(), selectedRow, selectedRow+1);
+                view.refresh(data);
+            }
+        });
+
     }
 
 }

@@ -1,14 +1,10 @@
 package com.company.view;
 
-import com.company.events.AddWordToLessonEvent;
+import com.company.events.CreateWordLessonEvent;
 import com.company.events.AppEvent;
 import com.company.events.ShowTestDialogEvent;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.concurrent.BlockingQueue;
 
 public class MainToolBar extends JToolBar {
@@ -39,7 +35,7 @@ public class MainToolBar extends JToolBar {
 
             // TODO check result
 
-            blockingQueue.add(new AddWordToLessonEvent(textField1.getText(), textField2.getText()));
+            blockingQueue.add(new CreateWordLessonEvent(textField1.getText(), textField2.getText()));
 
         });
         add(button);

@@ -4,16 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Data {
 
     String filename;
-    //Collection<Lesson> lessons = new LinkedList<>();
     Map<String, Lesson> lessons = new HashMap<>();
     Lesson chosenLesson;
 
@@ -73,8 +68,7 @@ public class Data {
                     Scanner reader = new Scanner(file);
                     while (reader.hasNextLine()) {
                         String data = reader.nextLine();
-                        //System.out.println(data);
-                        String[] line = data.split(";");
+                        String[] line = data.split("\\t");
                         lesson.addWord(line[0], line[1]);
                     }
                     reader.close();

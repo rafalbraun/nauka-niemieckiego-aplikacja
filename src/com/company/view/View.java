@@ -1,15 +1,20 @@
 package com.company.view;
 
-import com.company.events.ChooseLessonEvent;
+import com.company.events.*;
 import com.company.model.Data;
-import com.company.events.AppEvent;
 import com.company.model.Lesson;
+import com.company.model.Word;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 public class View {
@@ -83,15 +88,63 @@ public class View {
 
             tablePanel.setBounds(30, 40, 200, 300);
             tablePanel.setRowHeight(30);
-            //tablePanel.setFont(new Font("Serif", Font.PLAIN, 20));
-
-            // Set font globally for JTable
             tablePanel.setFont(new Font("Serif", Font.PLAIN, 20));
 
             // Set cell renderer with the same font settings
             DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
             renderer.setFont(new Font("Serif", Font.PLAIN, 20));
             tablePanel.setDefaultRenderer(Object.class, renderer);
+
+            tablePanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent event) {
+                    super.mousePressed(event);
+
+                    // selects the row at which point the mouse is clicked
+                    Point point = event.getPoint();
+                    int currentRow = tablePanel.rowAtPoint(point);
+                    tablePanel.setRowSelectionInterval(currentRow, currentRow);
+                }
+            });
+
+            // constructs the popup menu
+            JPopupMenu popupMenu = new JPopupMenu();
+            JMenuItem menuItemRemove = new JMenuItem("Remove Row");
+            JMenuItem menuItemMoveUp = new JMenuItem("Move Up");
+            JMenuItem menuItemMoveDn = new JMenuItem("Move Down");
+            popupMenu.add(menuItemRemove);
+            popupMenu.add(menuItemMoveUp);
+            popupMenu.add(menuItemMoveDn);
+
+            menuItemRemove.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int selectedRow = tablePanel.getSelectedRow();
+                    Vector rowData = ((DefaultTableModel) tablePanel.getModel()).getDataVector().elementAt(tablePanel.convertRowIndexToModel(tablePanel.getSelectedRow()));
+                    blockingQueue.add(new RemoveWordLessonEvent((String)rowData.get(0), (String)rowData.get(1)));
+                }
+            });
+            menuItemMoveUp.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int selectedRow = tablePanel.getSelectedRow();
+                    blockingQueue.add(new MoveUpWordLessonEvent(selectedRow));
+                }
+            });
+            menuItemMoveDn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int selectedRow = tablePanel.getSelectedRow();
+                    blockingQueue.add(new MoveDnWordLessonEvent(selectedRow));
+                }
+            });
+
+
+
+
+
+            // sets the popup menu for the table
+            tablePanel.setComponentPopupMenu(popupMenu);
 
             // Set cell editor with the same font settings
             DefaultCellEditor editor = new DefaultCellEditor(new JTextField()) {

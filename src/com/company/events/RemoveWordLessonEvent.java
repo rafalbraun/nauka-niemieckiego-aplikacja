@@ -1,12 +1,10 @@
 package com.company.events;
 
-import com.company.model.Lesson;
-
-public class AddWordToLessonEvent extends AppEvent {
+public class RemoveWordLessonEvent extends AppEvent {
 
     String word1, word2;
 
-    public AddWordToLessonEvent(String word1, String word2) {
+    public RemoveWordLessonEvent(String word1, String word2) {
         this.word1 = word1;
         this.word2 = word2;
     }

@@ -16,6 +16,14 @@ public class Lesson implements Serializable {
         wordList.add(new Pair<>(word1, word2));
     }
 
+    public void removeWord(String word1, String word2) {
+        wordList.remove(new Pair<>(word1, word2));
+    }
+
+    public List<Pair<String,String>> getWordList() {
+        return wordList;
+    }
+
     public String[][] getWords() {
         // Create a 2D String array with the same size as the list
         String[][] result = new String[wordList.size()][2];
