@@ -39,6 +39,7 @@ public class Controller {
     }
 
     private void fillEventActionMap() {
+
         eventActionMap.put(CreateLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 String lessonName = ((CreateLessonEvent)event).getName();
@@ -48,6 +49,7 @@ public class Controller {
                 view.refresh(data);
             }
         });
+
         eventActionMap.put(CreateWordLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 String word1 = ((CreateWordLessonEvent)event).getWordFirst();
@@ -58,6 +60,7 @@ public class Controller {
                 view.refresh(data);
             }
         });
+
         eventActionMap.put(ChooseLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 String lessonName = ((ChooseLessonEvent)event).getLessonName();
@@ -66,6 +69,7 @@ public class Controller {
                 view.refreshWords(data);
             }
         });
+
         eventActionMap.put(ShowTestDialogEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 view.showTestDialog(data);
@@ -85,6 +89,8 @@ public class Controller {
         eventActionMap.put(MoveUpWordLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 int selectedRow = ((MoveUpWordLessonEvent)event).getSelectedRow();
+                if (selectedRow == 0) return;
+                if (data.getChosenLesson().getWordList().size() < 2) return;
                 Collections.swap(data.getChosenLesson().getWordList(), selectedRow, selectedRow-1);
                 view.refresh(data);
             }
@@ -93,6 +99,8 @@ public class Controller {
         eventActionMap.put(MoveDnWordLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 int selectedRow = ((MoveDnWordLessonEvent)event).getSelectedRow();
+                if (selectedRow == data.getChosenLesson().getWordList().size()-1) return;
+                if (data.getChosenLesson().getWordList().size() < 2) return;
                 Collections.swap(data.getChosenLesson().getWordList(), selectedRow, selectedRow+1);
                 view.refresh(data);
             }
