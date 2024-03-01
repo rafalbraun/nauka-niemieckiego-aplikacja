@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 public class Lesson implements Serializable {
 
@@ -24,6 +25,13 @@ public class Lesson implements Serializable {
 
     public List<Pair<String,String>> getWordList() {
         return wordList;
+    }
+
+    public void setWordList(Vector<Vector> wordList) {
+        this.wordList.clear();
+        for(Vector item: wordList) {
+            this.wordList.add(new Pair<>((String)item.get(0), (String)item.get(1)));
+        }
     }
 
     public String[][] getWords() {

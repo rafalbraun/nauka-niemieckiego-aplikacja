@@ -84,8 +84,6 @@ public class Data {
             Lesson lesson = entry.getValue();
 
             File file = Paths.get(getDefaultDir().getAbsolutePath(), lessonName).toFile();
-//            System.out.println(getDefaultDir().getAbsolutePath());
-//            System.out.println(file.getName());
             saveWordListToFile(lesson.getWordList(), file);
         }
 
@@ -98,7 +96,6 @@ public class Data {
                 String second = pair.getSecond();
                 writer.println(first + "\t" + second);
             }
-            System.out.println("Word list has been written to file: " + file.getName());
         } catch (IOException e) {
             System.err.println("Error writing word list to file: " + e.getMessage());
         }

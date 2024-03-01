@@ -5,6 +5,7 @@ import com.company.model.Lesson;
 import com.company.view.View;
 import com.company.model.Data;
 
+import javax.swing.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,11 +62,25 @@ public class Controller {
 
         eventActionMap.put(CreateWordLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
-                String word1 = ((CreateWordLessonEvent)event).getWordFirst();
-                String word2 = ((CreateWordLessonEvent)event).getWordSecond();
-                if ("".equals(word1) || "".equals(word2)) return;
+
+                JTextField textFieldPL = new JTextField();
+                JTextField textFieldDE = new JTextField();
+
+                final JComponent[] inputs = new JComponent[] {
+                        textFieldPL, textFieldDE
+                };
+
+                int option = view.showInputDialog(inputs);
+
+                if (option != JOptionPane.OK_OPTION) return;
+
+                String wordPL = textFieldPL.getText();
+                String wordDE = textFieldDE.getText();
+
+                if ("".equals(wordPL) || "".equals(wordDE)) return;
+
                 Lesson lesson = data.getChosenLesson();
-                lesson.addWord(word1, word2);
+                lesson.addWord(wordPL, wordDE);
                 view.refresh(data);
             }
         });

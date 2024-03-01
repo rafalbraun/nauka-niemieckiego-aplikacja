@@ -10,10 +10,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
@@ -51,6 +48,26 @@ public class View {
         dialog.setVisible(true);
     }
 
+    public int showInputDialog(JComponent[] inputs) {
+
+        JPanel panel = new JPanel(new GridLayout(4,1));
+        panel.add(new JLabel("POLSKI:"));
+        panel.add(inputs[0]);
+        panel.add(new JLabel("DEUTSCH:"));
+        panel.add(inputs[1]);
+
+        /*
+        * @see: https://stackoverflow.com/questions/6251665/setting-component-focus-in-joptionpane-showoptiondialog
+        * @see: https://tips4java.wordpress.com/2010/03/14/dialog-focus/
+        * @see: https://github.com/tips4java/tips4java/blob/main/source/RequestFocusListener.java
+        */
+        inputs[0].addAncestorListener(new RequestFocusListener());
+
+        return JOptionPane.showOptionDialog(window.frame, panel, "Dodaj Słówko",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[]{"OK", "Cancel"}, "OK");
+
+    }
+
     class AppWindow {
 
         JList<String> lessonsList;
@@ -65,7 +82,7 @@ public class View {
             lessonsList = new JList<>();
             wordsTable = new JTable();
 
-            lessonsList.setFont(new Font("Serif", Font.PLAIN, 20));
+            lessonsList.setFont(new Font("Sans-serif", Font.PLAIN, 20));
             lessonsList.setFixedCellHeight(30);
             lessonsList.addListSelectionListener(e -> {
                 if (!e.getValueIsAdjusting()) {
@@ -109,11 +126,11 @@ public class View {
 
             wordsTable.setBounds(30, 40, 200, 300);
             wordsTable.setRowHeight(30);
-            wordsTable.setFont(new Font("Serif", Font.PLAIN, 20));
+            wordsTable.setFont(new Font("Sans-serif", Font.PLAIN, 20));
 
             // Set cell renderer with the same font settings
             DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-            renderer.setFont(new Font("Serif", Font.PLAIN, 20));
+            renderer.setFont(new Font("Sans-serif", Font.PLAIN, 20));
             wordsTable.setDefaultRenderer(Object.class, renderer);
 
             wordsTable.addMouseListener(new MouseAdapter() {
@@ -185,7 +202,7 @@ public class View {
                 @Override
                 public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
                     Component editorComponent = super.getTableCellEditorComponent(table, value, isSelected, row, column);
-                    editorComponent.setFont(new Font("Serif", Font.PLAIN, 20));
+                    editorComponent.setFont(new Font("Sans-serif", Font.PLAIN, 20));
                     return editorComponent;
                 }
             };
@@ -211,6 +228,8 @@ public class View {
             frame.setVisible(true);
             frame.setSize(new Dimension(800, 600));
             frame.setLocationRelativeTo(null);
+
+            assignShortcuts();
         }
 
         public void refreshLessons(Data data) {
@@ -251,11 +270,39 @@ public class View {
             // Refresh the table
             model.fireTableDataChanged();
 
+            // Add a table model listener to detect cell value changes
+            model.addTableModelListener(new TableModelListener() {
+                @Override
+                public void tableChanged(TableModelEvent e) {
+                    if (e.getType() == TableModelEvent.UPDATE) {
+                        Vector<Vector> rowData = ((DefaultTableModel) wordsTable.getModel()).getDataVector();
+                        lesson.setWordList(rowData);
+                    }
+                }
+            });
+
             wordsTable.setModel(model);
         }
 
+        public void assignShortcuts() {
+            // Define the action and its associated key stroke
+            Action action = new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //System.out.println("Global shortcut activated: Ctrl + W");
+                    // Perform action here
+                    blockingQueue.add(new CreateWordLessonEvent());
+                }
+            };
+            KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK);
+
+            // Create a map to associate the key stroke with the action
+            InputMap inputMap = frame.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+            ActionMap actionMap = frame.getRootPane().getActionMap();
+            inputMap.put(keyStroke, "globalShortcut");
+            actionMap.put("globalShortcut", action);
+        }
+
     }
-
-
 
 }

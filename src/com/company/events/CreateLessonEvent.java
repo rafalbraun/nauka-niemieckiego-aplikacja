@@ -11,4 +11,5 @@ public class CreateLessonEvent extends AppEvent {
     public String getName() {
         return name;
     }
+
 }
