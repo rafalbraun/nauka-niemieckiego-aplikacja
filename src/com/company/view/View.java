@@ -51,9 +51,9 @@ public class View {
     public int showInputDialog(JComponent[] inputs) {
 
         JPanel panel = new JPanel(new GridLayout(4,1));
-        panel.add(new JLabel("POLSKI:"));
-        panel.add(inputs[0]);
         panel.add(new JLabel("DEUTSCH:"));
+        panel.add(inputs[0]);
+        panel.add(new JLabel("POLSKI:"));
         panel.add(inputs[1]);
 
         /*

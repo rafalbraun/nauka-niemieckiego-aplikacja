@@ -15,12 +15,12 @@ public class Lesson implements Serializable {
 
     public Lesson() {}
 
-    public void addWord(String word1, String word2) {
-        wordList.add(new Pair<>(word1, word2));
+    public void addWord(String wordDE, String wordPL) {
+        wordList.add(new Pair<>(wordDE, wordPL));
     }
 
-    public void removeWord(String word1, String word2) {
-        wordList.remove(new Pair<>(word1, word2));
+    public void removeWord(String wordDE, String wordPL) {
+        wordList.remove(new Pair<>(wordDE, wordPL));
     }
 
     public List<Pair<String,String>> getWordList() {

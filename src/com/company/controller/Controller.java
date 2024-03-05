@@ -63,24 +63,24 @@ public class Controller {
         eventActionMap.put(CreateWordLessonEvent.class, new AppAction() {
             public void go(AppEvent event) {
 
-                JTextField textFieldPL = new JTextField();
                 JTextField textFieldDE = new JTextField();
+                JTextField textFieldPL = new JTextField();
 
                 final JComponent[] inputs = new JComponent[] {
-                        textFieldPL, textFieldDE
+                        textFieldDE, textFieldPL
                 };
 
                 int option = view.showInputDialog(inputs);
 
                 if (option != JOptionPane.OK_OPTION) return;
 
-                String wordPL = textFieldPL.getText();
                 String wordDE = textFieldDE.getText();
+                String wordPL = textFieldPL.getText();
 
                 if ("".equals(wordPL) || "".equals(wordDE)) return;
 
                 Lesson lesson = data.getChosenLesson();
-                lesson.addWord(wordPL, wordDE);
+                lesson.addWord(wordDE, wordPL);
                 view.refresh(data);
             }
         });
