@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.*;
 
 public class Data {
@@ -47,7 +48,12 @@ public class Data {
             }
         }
 
-        readData();
+        try {
+            readData();
+        } catch (FileNotFoundException | ParseException ex) {
+            JOptionPane.showConfirmDialog(null,
+                    "Error:" + ex.getMessage(), "Błąd", JOptionPane.DEFAULT_OPTION);
+        }
     }
 
     public File getDefaultDir() {
@@ -78,7 +84,6 @@ public class Data {
     public void setChosenLesson(Lesson lesson) { this.chosenLesson = lesson; }
 
     public void saveData() {
-
         for (Map.Entry<String, Lesson> entry : lessons.entrySet()) {
             String lessonName = entry.getKey();
             Lesson lesson = entry.getValue();
@@ -86,7 +91,6 @@ public class Data {
             File file = Paths.get(getDefaultDir().getAbsolutePath(), lessonName).toFile();
             saveWordListToFile(lesson.getWordList(), file);
         }
-
     }
 
     public static void saveWordListToFile(List<Pair<String, String>> wordList, File file) {
@@ -96,42 +100,41 @@ public class Data {
                 String second = pair.getSecond();
                 writer.println(first + "\t" + second);
             }
-        } catch (IOException e) {
-            System.err.println("Error writing word list to file: " + e.getMessage());
+        } catch (IOException ex) {
+            JOptionPane.showConfirmDialog(null,
+                    "Błąd zapisu:" + ex.getMessage(), "Błąd", JOptionPane.DEFAULT_OPTION);
         }
     }
 
-    public void readData() {
-
+    public void readData() throws FileNotFoundException, ParseException {
         Map<String, Lesson> lessons = new HashMap<>();
-
-        //File folder = new File("resources/lessons");
         File[] listOfFiles = getDefaultDir().listFiles();
 
         if (listOfFiles == null) return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
-                //System.out.println(file.getName());
-                Lesson lesson = new Lesson();
-                try {
-                    Scanner reader = new Scanner(file);
-                    while (reader.hasNextLine()) {
-                        String data = reader.nextLine();
-                        String[] line = data.split("\\t");
-                        lesson.addWord(line[0], line[1]);
-                    }
-                    reader.close();
-                } catch (FileNotFoundException ex) {
-                    System.out.println("ERROR");
-                    ex.printStackTrace();
-                }
+                Lesson lesson = readLesson(file);
                 lessons.put(file.getName(), lesson);
             }
         }
 
         setLessons(lessons);
         setChosenLesson(getFirstLesson());
+    }
 
+    private Lesson readLesson(File file) throws FileNotFoundException, ParseException {
+        Lesson lesson = new Lesson();
+        Scanner reader = new Scanner(file);
+        while (reader.hasNextLine()) {
+            String data = reader.nextLine();
+            String[] line = data.split("\\t");
+            if (line.length != 2) {
+                throw new ParseException("Plik nieprawidłowy: odczytano więcej niż dwie wartości w linii.", -1);
+            }
+            lesson.addWord(line[0], line[1]);
+        }
+        reader.close();
+        return lesson;
     }
 
     private Lesson getFirstLesson() {
@@ -144,18 +147,23 @@ public class Data {
     }
 
     private static Properties loadProperties() {
-
         Properties props = new Properties();
 
         try (InputStream input = new FileInputStream(propsFile)) {
-
             props.load(input);
-
         } catch (Exception e ) {
             e.printStackTrace();
         }
 
         return props;
+    }
+
+    public void importFile(String path) throws FileNotFoundException, ParseException {
+        File file = new File(path);
+        Lesson lesson = readLesson(file);
+        lessons.put(file.getName(), lesson);
+        setLessons(lessons);
+        setChosenLesson(getFirstLesson());
     }
 
 }

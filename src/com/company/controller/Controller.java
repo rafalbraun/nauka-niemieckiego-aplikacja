@@ -6,6 +6,11 @@ import com.company.view.View;
 import com.company.model.Data;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +138,33 @@ public class Controller {
         eventActionMap.put(SaveEvent.class, new AppAction() {
             public void go(AppEvent event) {
                 data.saveData();
+            }
+        });
+
+        eventActionMap.put(ImportFileEvent.class, new AppAction() {
+            @Override
+            public void go(AppEvent e) {
+
+                // TODO import whole folders
+
+                JFileChooser chooser = new JFileChooser();
+                chooser.setCurrentDirectory(FileSystemView.getFileSystemView().getHomeDirectory());
+                chooser.setDialogTitle("Importuj PLik");
+                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                chooser.setAcceptAllFileFilterUsed(false);
+
+                int choice = chooser.showOpenDialog(null);
+                if (choice == JFileChooser.APPROVE_OPTION) {
+                    String selectedPath = chooser.getSelectedFile().getAbsolutePath();
+                    try {
+                        data.importFile(selectedPath);
+                    } catch (FileNotFoundException | ParseException ex) {
+                        JOptionPane.showConfirmDialog(null,
+                               "Error:" + ex.getMessage(), "Błąd", JOptionPane.DEFAULT_OPTION);
+                    }
+                    view.refresh(data);
+                }
+
             }
         });
 

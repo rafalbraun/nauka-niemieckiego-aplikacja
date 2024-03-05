@@ -2,10 +2,10 @@ package com.company.view;
 
 import com.company.events.AppEvent;
 import com.company.events.CreateLessonEvent;
+import com.company.events.ImportFileEvent;
 import com.company.events.SaveEvent;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,6 @@ public class MainMenuBar extends JMenuBar {
 
         var importMenuItem = new JMenuItem("Importuj", iconOpen);
         var saveMenuItem = new JMenuItem("Zapisz", iconSave);
-        var saveAsMenuItem = new JMenuItem("Zapisz jako ...", iconSave);
         var exitMenuItem = new JMenuItem("Zamknij", iconExit);
 
         exitMenuItem.addActionListener((event) -> System.exit(0));
@@ -38,12 +37,7 @@ public class MainMenuBar extends JMenuBar {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                String myDocuments = new JFileChooser().getFileSystemView().getDefaultDirectory().toString();
-                System.out.println(myDocuments);
-
-                // TODO import plików
-
+                blockingQueue.add(new ImportFileEvent());
             }
 
         });
@@ -78,12 +72,7 @@ public class MainMenuBar extends JMenuBar {
                     null,
                     null);
 
-            //System.out.println(textField.getText());
-            //data.createLesson(textField.getText());
-            //view.refresh();
-
             blockingQueue.add(new CreateLessonEvent(textField.getText()));
-
         });
 
         add(lessonsMenu);
@@ -94,16 +83,13 @@ public class MainMenuBar extends JMenuBar {
         add(helpMenu);
 
         aboutItem.addActionListener((event) -> {
-
-            int choice = JOptionPane.showConfirmDialog(rootComponent,
-                    """
-                            Autor: Rafał Braun\s
-                            Wersja: 1.0.0\s
-                            """,
-                    "O Programie", JOptionPane.DEFAULT_OPTION);
-
+            JOptionPane.showConfirmDialog(rootComponent,
+         """
+                 Autor: Rafał Braun\s
+                 Wersja: 1.0.0\s
+                 """,
+            "O Programie", JOptionPane.DEFAULT_OPTION);
         });
-
     }
 
     public void importLesson() {}

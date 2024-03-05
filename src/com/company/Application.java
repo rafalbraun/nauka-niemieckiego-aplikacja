@@ -6,9 +6,6 @@ import com.company.model.Data;
 import com.company.view.View;
 
 import javax.swing.*;
-import java.io.*;
-import java.nio.file.Paths;
-import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 

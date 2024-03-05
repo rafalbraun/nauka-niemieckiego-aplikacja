@@ -72,6 +72,8 @@ public class View {
 
         JList<String> lessonsList;
         JTable wordsTable;
+        JMenuBar menuBar;
+        JToolBar toolBar;
         JFrame frame;
 
         // Column Names
@@ -87,9 +89,6 @@ public class View {
             lessonsList.addListSelectionListener(e -> {
                 if (!e.getValueIsAdjusting()) {
                     String lessonName = lessonsList.getSelectedValue();
-
-                    // TODO if no available lesson, then hide toolbar
-
                     blockingQueue.add(new ChooseLessonEvent(lessonName));
                 }
             });
@@ -170,7 +169,6 @@ public class View {
                             "Remove Word", JOptionPane.YES_NO_OPTION);
 
                     if (choice == JOptionPane.YES_OPTION) {
-                        int selectedRow = wordsTable.getSelectedRow();
                         Vector rowData = ((DefaultTableModel) wordsTable.getModel()).getDataVector().elementAt(wordsTable.convertRowIndexToModel(wordsTable.getSelectedRow()));
                         blockingQueue.add(new RemoveWordLessonEvent((String)rowData.get(0), (String)rowData.get(1)));
                     }
@@ -213,8 +211,8 @@ public class View {
             mainSplitPane.setBottomComponent(new JScrollPane(wordsTable));
             mainSplitPane.setDividerLocation(200);
 
-            JMenuBar menuBar = new MainMenuBar(blockingQueue, frame);
-            JToolBar toolBar = new MainToolBar(blockingQueue, frame);
+            menuBar = new MainMenuBar(blockingQueue, frame);
+            toolBar = new MainToolBar(blockingQueue, frame);
             JPanel mainPanel = new JPanel(new BorderLayout());
 
             mainPanel.add(toolBar, BorderLayout.NORTH);
@@ -247,6 +245,9 @@ public class View {
                 }
                 iter++;
             }
+
+            // if no available lesson, then hide toolbar
+            toolBar.setVisible(modelList.size() > 0);
 
             lessonsList.setModel(modelList);
             lessonsList.setSelectedIndex(index);
@@ -285,11 +286,11 @@ public class View {
         }
 
         public void assignShortcuts() {
+
             // Define the action and its associated key stroke
             Action action = new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //System.out.println("Global shortcut activated: Ctrl + W");
                     // Perform action here
                     blockingQueue.add(new CreateWordLessonEvent());
                 }
@@ -301,6 +302,7 @@ public class View {
             ActionMap actionMap = frame.getRootPane().getActionMap();
             inputMap.put(keyStroke, "globalShortcut");
             actionMap.put("globalShortcut", action);
+
         }
 
     }
