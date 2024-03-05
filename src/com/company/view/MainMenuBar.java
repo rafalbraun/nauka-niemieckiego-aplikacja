@@ -42,6 +42,7 @@ public class MainMenuBar extends JMenuBar {
                 String myDocuments = new JFileChooser().getFileSystemView().getDefaultDirectory().toString();
                 System.out.println(myDocuments);
 
+                // TODO import plików
 
             }
 

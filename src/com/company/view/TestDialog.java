@@ -62,25 +62,29 @@ public class TestDialog extends JDialog {
 
         var bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        var checkBtn = new JButton("Check");
+        var checkBtn = new JButton("Sprawdź");
         checkBtn.setMnemonic(KeyEvent.VK_N);
         checkBtn.addActionListener((checkEvent) -> {
 
             for (JComponent[] componentArray : testData) {
+
                 JTextField textField = (JTextField)componentArray[1];
+                textField.setEnabled(false);
+
                 JLabel answerLabel = (JLabel)componentArray[2];
                 if (answerLabel.getText().equals(textField.getText())) {
                     answerLabel.setForeground(new Color(0, 128, 0));
                 } else {
                     answerLabel.setForeground(Color.RED);
                 }
+
             }
 
             testPanel2.setVisible(true);
             checkBtn.setEnabled(false);
         });
 
-        var closeBtn = new JButton("Close");
+        var closeBtn = new JButton("Zamknij");
         closeBtn.setMnemonic(KeyEvent.VK_C);
         closeBtn.addActionListener((closeEvent) -> {
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
@@ -92,13 +96,6 @@ public class TestDialog extends JDialog {
 
         bottomPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-        //dialog.setModal(true);
-        //setTitle("Tip of the Day");
-        //setPreferredSize(new Dimension(450, 350));
-        //setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        //setLocationRelativeTo(null);
-        //setVisible(true);
-
         addWindowListener(new WindowAdapter()
         {
             @Override
@@ -107,7 +104,6 @@ public class TestDialog extends JDialog {
                 super.windowClosing(e);
             }
         });
-
 
     }
 
