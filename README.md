@@ -1,5 +1,5 @@
 ### Aplikacja
-Program jest pomocą w nauce słówek w języku niemieckim. Pozwala tworzyć lekcje, dodawać do nich słowa i importować lekcje w postaci plików tsv (tab separated values). Pliki tsv można otworzyć w dowolnym edytorze tekstowym, a także w prpgramie MS Excel.
+Program jest pomocą w nauce słówek w języku niemieckim. Pozwala tworzyć lekcje, dodawać do nich słowa i importować lekcje w postaci plików tsv (tab separated values). Pliki tsv można otworzyć w dowolnym edytorze tekstowym, a także w programie MS Excel.
 
 ### Instrukcje
 Program oferuje funkcje takie jak:
